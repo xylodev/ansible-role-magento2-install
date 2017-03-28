@@ -1,0 +1,32 @@
+---
+- include: variables.yml
+
+- include: composer.yml
+  when: magento_composer_update
+
+- name: Install Magento
+  command: php bin/magento setup:install \
+    --cleanup-database \
+    --backend-frontname=admin \
+    --session-save=db \
+    --db-host={{ magento_database_host }} \
+    --db-user={{ magento_database_user }} \
+    --db-password="{{ magento_database_password }}" \
+    --db-name={{ magento_database }} \
+    --use-rewrites=1 \
+    --admin-user={{ magento_admin_user }} \
+    --admin-password="{{ magento_admin_password }}" \
+    --admin-email="{{ magento_admin_email }}" \
+    --admin-firstname="{{ magento_admin_firstname }}" \
+    --admin-lastname="{{ magento_admin_lastname }}" \
+    --language={{ magento_language }} \
+    --currency={{ magento_currency }} \
+    --base-url="{{ magento_base_url }}"
+  args:
+    creates: app/etc/env.php
+    chdir: "{{ magento_vhost_dir }}"
+
+- name: Setup Magento cron
+  cron:
+    name: "Magento 2 cron"
+    job: "php {{ magento_vhost_dir }}/bin/magento cron:run"

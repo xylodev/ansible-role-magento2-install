@@ -1,0 +1,41 @@
+---
+- name: Get the username
+  shell: whoami
+  register: __user_name
+  become: no
+
+- name: Register user_name variable
+  set_fact:
+    user_name: "{{ __user_name.stdout }}"
+
+- name: Find user's home directory
+  shell: eval echo "~{{ user_name }}"
+  register: __user_home
+
+- name: Register user_home variable
+  set_fact:
+    user_home: "{{ __user_home.stdout }}"
+
+- name: Ensure composer dir exists
+  file:
+    path: "{{ user_home }}/.composer"
+    state: directory
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+  become: true
+
+- name: Configure auth.json
+  template:
+    src: auth.json.j2
+    dest: "{{ user_home }}/.composer/auth.json"
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+    mode: 0644
+    force: yes
+  when: magento_auth_user is defined and magento_auth_password is defined
+
+- name: Composer update
+  composer:
+    command: update
+    working_dir: "{{ magento_vhost_dir }}"
+  become: false
