@@ -2,7 +2,7 @@
 - include: variables.yml
 
 - include: composer.yml
-  when: magento_composer_update
+  when: not magento_disable_composer_update
 
 - name: Install Magento
   command: php bin/magento setup:install \
@@ -25,6 +25,17 @@
   args:
     creates: app/etc/env.php
     chdir: "{{ magento_vhost_dir }}"
+
+- name: Clear cache and DI directories
+  file:
+    path: "{{ magento_vhost_dir }}/{{ item }}/"
+    state: absent
+  with_items:
+    - var/cache
+    - var/di
+    - var/generation
+    - var/page_cache
+    - var/view_preprocessed
 
 - name: Set execute permissions on bin/magento file
   file:

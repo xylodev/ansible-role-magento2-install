@@ -1,7 +1,7 @@
 ---
 __magento_vhost_dir: "/var/www/html"
 
-magento_composer_update: no
+magento_disable_composer_update: no
 magento_admin_frontname: admin
 magento_database_host: localhost
 magento_database: magento2
