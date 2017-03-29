@@ -3,6 +3,7 @@
   shell: whoami
   register: __user_name
   become: no
+  changed_when: false
 
 - name: Register user_name variable
   set_fact:
@@ -11,6 +12,7 @@
 - name: Find user's home directory
   shell: eval echo "~{{ user_name }}"
   register: __user_home
+  changed_when: false
 
 - name: Register user_home variable
   set_fact:
