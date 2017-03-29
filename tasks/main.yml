@@ -6,25 +6,45 @@
 
 - name: Install Magento
   command: php bin/magento setup:install \
-    --cleanup-database \
-    --backend-frontname=admin \
-    --session-save=db \
+    --backend-frontname={{ magento_admin_frontname }} \
     --db-host={{ magento_database_host }} \
+    --db-name={{ magento_database }} \
     --db-user={{ magento_database_user }} \
     --db-password="{{ magento_database_password }}" \
-    --db-name={{ magento_database }} \
-    --use-rewrites=1 \
-    --admin-user={{ magento_admin_user }} \
-    --admin-password="{{ magento_admin_password }}" \
-    --admin-email="{{ magento_admin_email }}" \
     --admin-firstname="{{ magento_admin_firstname }}" \
     --admin-lastname="{{ magento_admin_lastname }}" \
+    --admin-email="{{ magento_admin_email }}" \
+    --admin-user={{ magento_admin_user }} \
+    --admin-password="{{ magento_admin_password }}" \
+    --base-url="{{ magento_base_url }}" \
     --language={{ magento_language }} \
     --currency={{ magento_currency }} \
-    --base-url="{{ magento_base_url }}"
+    --use-rewrites={{ magento_use_rewrites }} \
+    --session-save={{ magento_session_save }} \
+    {{ magento_install_options }}
   args:
     creates: app/etc/env.php
     chdir: "{{ magento_vhost_dir }}"
+
+- name: Set execute permissions on bin/magento file
+  file:
+    path: "{{ magento_vhost_dir }}/bin/magento"
+    mode: 0755
+
+- name: Set write permissions on writable directories
+  file:
+    path: "{{ magento_vhost_dir }}/{{ item }}"
+    mode: "u=rwX,g=rwX,o=rwX"
+    recurse: yes
+  with_items:
+    - var
+    - pub/static
+
+- name: Set Magento deploy mode
+  command: php bin/magento deploy:mode:set {{ magento_deploy_mode }}
+  args:
+    chdir: "{{ magento_vhost_dir }}"
+  when: magento_deploy_mode is defined
 
 - name: Setup Magento cron
   cron:

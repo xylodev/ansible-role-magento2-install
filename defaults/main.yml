@@ -2,17 +2,21 @@
 __magento_vhost_dir: "/var/www/html"
 
 magento_composer_update: no
+magento_admin_frontname: admin
+magento_database_host: localhost
 magento_database: magento2
 magento_database_user: magento
 magento_database_password: magento
-magento_database_host: localhost
-magento_admin_user: admin
-magento_admin_password: admin
-magento_admin_email: "john.doe@example.com"
 magento_admin_firstname: John
 magento_admin_lastname: Doe
+magento_admin_email: "john.doe@example.com"
+magento_admin_user: admin
+magento_admin_password: admin
+magento_base_url: "http://localhost/"
 magento_language: en_US
 magento_currency: EUR
-magento_base_url: "http://localhost/"
+magento_use_rewrites: 1
+magento_session_save: db
+magento_install_options: "--cleanup-database"
 
 composer_github_oauth_token: ""
