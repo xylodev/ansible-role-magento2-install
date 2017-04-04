@@ -2,7 +2,11 @@
 - include: variables.yml
 
 - include: composer.yml
-  when: not magento_disable_composer_update
+
+- name: Set execute permissions on bin/magento file
+  file:
+    path: "{{ magento_vhost_dir }}/bin/magento"
+    mode: 0755
 
 - name: Install Magento
   command: php bin/magento setup:install \
@@ -37,11 +41,6 @@
     - var/page_cache
     - var/view_preprocessed
 
-- name: Set execute permissions on bin/magento file
-  file:
-    path: "{{ magento_vhost_dir }}/bin/magento"
-    mode: 0755
-
 - name: Set write permissions on writable directories
   file:
     path: "{{ magento_vhost_dir }}/{{ item }}"
@@ -50,12 +49,6 @@
   with_items:
     - var
     - pub/static
-
-- name: Set Magento deploy mode
-  command: php bin/magento deploy:mode:set {{ magento_deploy_mode }}
-  args:
-    chdir: "{{ magento_vhost_dir }}"
-  when: magento_deploy_mode is defined
 
 - name: Setup Magento cron
   cron:
