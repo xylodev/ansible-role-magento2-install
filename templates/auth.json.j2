@@ -7,5 +7,14 @@
             "username": "{{ magento_auth_user }}",
             "password": "{{ magento_auth_password }}"
         }
+        {% if composer_auths is defined %}
+            {% for auth in composer_auths %}
+                ,
+                "{{ auth.url }}": {
+                    "username": "{{ auth.user | default('') }}",
+                    "password": "{{ auth.password | default('') }}"
+                }
+            {% endfor %}
+        {% endif %}
     }
 }
